@@ -1,24 +1,30 @@
 from rembg import remove
 from PIL import Image
-import os
+from pathlib import Path
 
-input_folder = "img_input"
-output_folder = "img_output"
+input_folder = Path("img_input")
+output_folder = Path("img_output")
 
 valid_extensions = (".png", ".jpg", ".jpeg")
 
-for file in os.listdir(input_folder):
+def remover_fundo(input_path, output_path):
+    img = Image.open(input_path)
+    img_removed = remove(img)
+    img_removed.save(output_path)
 
-    if file.lower().endswith(valid_extensions):
+def processar_imagens():
 
-        input_path = os.path.join(input_folder, file)
-        output_path = os.path.join(output_folder, f"removed_{file}")
+    for file in input_folder.iterdir():
 
-        print(f"Processando: {file}")
+        if file.suffix.lower() in valid_extensions:
 
-        img = Image.open(input_path)
-        img_removed = remove(img)
+            output_path = output_folder / f"removed_{file.name}"
 
-        img_removed.save(output_path)
+            print(f"Processando: {file.name}")
 
-print("Todas as imagens foram processadas!")
+            remover_fundo(file, output_path)
+
+    print("Todas as imagens foram processadas!")
+
+if __name__ == "__main__":
+    processar_imagens()
