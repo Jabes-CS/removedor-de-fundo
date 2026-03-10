@@ -5,6 +5,8 @@ from pathlib import Path
 input_folder = Path("img_input")
 output_folder = Path("img_output")
 
+output_folder.mkdir(exist_ok=True)
+
 valid_extensions = (".png", ".jpg", ".jpeg")
 
 def remover_fundo(input_path, output_path):
@@ -18,7 +20,8 @@ def processar_imagens():
 
         if file.suffix.lower() in valid_extensions:
 
-            output_path = output_folder / f"removed_{file.name}"
+            novo_nome = f"{file.stem}_fundo_removido.png"
+            output_path = output_folder / novo_nome
 
             print(f"Processando: {file.name}")
 
