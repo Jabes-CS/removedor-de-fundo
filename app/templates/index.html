@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<title>Removedor de Fundo</title>
+
+<style>
+
+body{
+font-family: Arial;
+text-align:center;
+background:#f5f5f5;
+margin-top:50px;
+}
+
+.container{
+background:white;
+padding:30px;
+border-radius:10px;
+width:400px;
+margin:auto;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+button{
+padding:10px 20px;
+margin-top:15px;
+border:none;
+background:#4CAF50;
+color:white;
+font-size:16px;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#45a049;
+}
+
+img{
+margin-top:20px;
+max-width:100%;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Removedor de Fundo</h1>
+
+<input type="file" id="fileInput">
+
+<br>
+
+<button onclick="enviarImagem()">Remover Fundo</button>
+
+<div id="resultado"></div>
+
+</div>
+
+<script>
+
+async function enviarImagem(){
+
+const file = document.getElementById("fileInput").files[0]
+
+if(!file){
+alert("Escolha uma imagem primeiro")
+return
+}
+
+const formData = new FormData()
+formData.append("file", file)
+
+const response = await fetch("/remover-fundo",{
+method:"POST",
+body:formData
+})
+
+const blob = await response.blob()
+
+const url = URL.createObjectURL(blob)
+
+document.getElementById("resultado").innerHTML = `
+<h3>Resultado:</h3>
+<img src="${url}">
+<br><br>
+<a href="${url}" download="imagem_sem_fundo.png">
+<button>Baixar imagem</button>
+</a>
+`
+
+}
+
+</script>
+
+</body>
+</html>
