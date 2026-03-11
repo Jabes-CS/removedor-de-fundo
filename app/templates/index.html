@@ -9,38 +9,54 @@
 
 body{
 font-family: Arial;
+background:#f4f6f8;
 text-align:center;
-background:#f5f5f5;
-margin-top:50px;
+padding:40px;
 }
 
 .container{
 background:white;
-padding:30px;
-border-radius:10px;
-width:400px;
+max-width:600px;
 margin:auto;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+.drop-area{
+border:2px dashed #aaa;
+padding:40px;
+border-radius:10px;
+cursor:pointer;
+margin-bottom:20px;
+}
+
+.drop-area:hover{
+border-color:#4CAF50;
 }
 
 button{
-padding:10px 20px;
-margin-top:15px;
-border:none;
 background:#4CAF50;
 color:white;
+border:none;
+padding:12px 20px;
 font-size:16px;
-border-radius:5px;
+border-radius:6px;
 cursor:pointer;
 }
 
 button:hover{
-background:#45a049;
+background:#43a047;
 }
 
-img{
+.preview img{
+max-width:120px;
+margin:10px;
+}
+
+.result img{
+max-width:200px;
 margin-top:20px;
-max-width:100%;
 }
 
 </style>
@@ -52,26 +68,53 @@ max-width:100%;
 
 <h1>Removedor de Fundo</h1>
 
-<input type="file" id="fileInput">
+<div class="drop-area" onclick="fileInput.click()">
+<p>Arraste imagens ou clique para selecionar</p>
+<input type="file" id="fileInput" multiple hidden>
+</div>
 
-<br>
+<div class="preview" id="preview"></div>
 
-<button onclick="enviarImagem()">Remover Fundo</button>
+<button onclick="enviarImagens()">Remover Fundo</button>
 
-<div id="resultado"></div>
+<div class="result" id="resultado"></div>
 
 </div>
 
 <script>
 
-async function enviarImagem(){
+const fileInput = document.getElementById("fileInput")
+const preview = document.getElementById("preview")
 
-const file = document.getElementById("fileInput").files[0]
+fileInput.addEventListener("change", mostrarPreview)
 
-if(!file){
-alert("Escolha uma imagem primeiro")
+function mostrarPreview(){
+
+preview.innerHTML=""
+
+const files = fileInput.files
+
+for(const file of files){
+
+const img = document.createElement("img")
+img.src = URL.createObjectURL(file)
+
+preview.appendChild(img)
+
+}
+
+}
+
+async function enviarImagens(){
+
+const files = fileInput.files
+
+if(files.length === 0){
+alert("Selecione pelo menos uma imagem")
 return
 }
+
+for(const file of files){
 
 const formData = new FormData()
 formData.append("file", file)
@@ -85,14 +128,31 @@ const blob = await response.blob()
 
 const url = URL.createObjectURL(blob)
 
-document.getElementById("resultado").innerHTML = `
-<h3>Resultado:</h3>
-<img src="${url}">
-<br><br>
-<a href="${url}" download="imagem_sem_fundo.png">
-<button>Baixar imagem</button>
-</a>
-`
+const nomeOriginal = file.name.split(".")[0]
+const novoNome = nomeOriginal + "_fundo_removido.png"
+
+const container = document.createElement("div")
+
+const img = document.createElement("img")
+img.src = url
+img.style.maxWidth = "200px"
+
+const link = document.createElement("a")
+link.href = url
+link.download = novoNome
+
+const botao = document.createElement("button")
+botao.innerText = "Baixar"
+
+link.appendChild(botao)
+
+container.appendChild(img)
+container.appendChild(document.createElement("br"))
+container.appendChild(link)
+
+document.getElementById("resultado").appendChild(container)
+
+}
 
 }
 

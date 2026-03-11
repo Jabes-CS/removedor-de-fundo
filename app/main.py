@@ -21,10 +21,10 @@ output_folder.mkdir(exist_ok=True)
 @app.post("/remover-fundo")
 async def remover(file: UploadFile = File(...)):
 
-    file_id = str(uuid.uuid4())
+    nome_original = Path(file.filename).stem
 
-    input_path = input_folder / f"{file_id}_{file.filename}"
-    output_path = output_folder / f"{file_id}_fundo_removido.png"
+    input_path = input_folder / file.filename
+    output_path = output_folder / f"{nome_original}_fundo_removido.png"
 
     with open(input_path, "wb") as buffer:
         buffer.write(await file.read())
